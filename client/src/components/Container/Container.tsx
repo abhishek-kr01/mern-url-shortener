@@ -1,6 +1,10 @@
+import FormContainer from "../FormContainer/FormContainer"
+
 function Container() {
   return (
-    <div>Container</div>
+    <>
+      <FormContainer/>
+    </>
   )
 }
 
