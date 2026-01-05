@@ -2,23 +2,28 @@ import { useState } from "react";
 import axios from "axios";
 import { serverUrl } from "../../helpers/Constants";
 
-function FormContainer() {
+interface FormContainerProps {
+  onSuccess: () => void;
+}
+
+function FormContainer({ onSuccess }: FormContainerProps) {
   const [fullUrl, setFullUrl] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
-  ) => {
+  ): Promise<void> => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      await axios.post(`${serverUrl}/api/shorturl`, {
-        fullUrl,
-      });
-
+      await axios.post(`${serverUrl}/api/shorturl`, { fullUrl });
       setFullUrl("");
-      console.log("URL shortened successfully");
+      onSuccess();
     } catch (error) {
       console.error("Error shortening URL:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,32 +40,27 @@ function FormContainer() {
           </p>
 
           <p className="text-white text-center pb-4 text-sm font-thin">
-            Free tool to shorten a URL and create neat, shareable links
+            Free tool to create neat, shareable short links
           </p>
 
           <form onSubmit={handleSubmit}>
-            <div className="flex">
-              <div className="relative w-full">
-                <div className="absolute inset-y-0 start-0 flex items-center ps-2 pointer-events-none text-slate-800">
-                  urlshortner.link/
-                </div>
+            <div className="relative w-full">
+              <input
+                type="url"
+                placeholder="Paste your URL here"
+                required
+                className="block w-full p-4 pr-32 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
+                value={fullUrl}
+                onChange={(e) => setFullUrl(e.target.value)}
+              />
 
-                <input
-                  type="url"
-                  placeholder="add your link"
-                  required
-                  className="block w-full p-4 ps-32 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
-                  value={fullUrl}
-                  onChange={(e) => setFullUrl(e.target.value)}
-                />
-
-                <button
-                  type="submit"
-                  className="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
-                >
-                  Shorten URL
-                </button>
-              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="absolute top-0 right-0 h-full px-6 text-white bg-blue-700 rounded-r-lg hover:bg-blue-800 disabled:opacity-60"
+              >
+                {loading ? "Shortening..." : "Shorten"}
+              </button>
             </div>
           </form>
         </div>
