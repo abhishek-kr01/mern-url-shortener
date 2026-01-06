@@ -44,9 +44,10 @@ Mongoose
 
 NanoID
 
-📂 Project Structure
+## 📂 Project Structure
+
+```text
 mern-url-shortener/
-│
 ├── client/
 │   ├── public/
 │   ├── src/
